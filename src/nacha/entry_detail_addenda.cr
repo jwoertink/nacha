@@ -1,6 +1,6 @@
 module Nacha
-  class BatchControl
-    TYPE_CODE = 8
+  class EntryDetailAddenda
+    TYPE_CODE = 7
 
     def initialize
     end
