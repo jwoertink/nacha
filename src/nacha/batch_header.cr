@@ -9,9 +9,9 @@ module Nacha
     TYPE_CODE = 5
 
     enum ServiceClassCode
-      Mixed = 200
+      Mixed  = 200
       Credit = 220
-      Debit = 225
+      Debit  = 225
     end
 
     enum StandardEntryClass
@@ -23,17 +23,17 @@ module Nacha
     end
 
     def initialize(
-      @service_class_code : ServiceClassCode, # Credit, Debit, Mixed
-      @company_name : String, # Same as immediate_origin_name in the FileHeader
-      @company_identification : String, # This should be the immediate_origin from the FileHeader or a custom designation
-      @standard_entry_class : StandardEntryClass, # Type reason for the money transfer
-      @company_entry_description : String, # Description of the transaction to be printed on the receivers' bank statement
-      @effective_entry_date : Time, # The date to post the transaction
-      @originating_financial_institution : String, # Same as immediate_destination in FileHeader
+      @service_class_code : ServiceClassCode,      # Credit, Debit, Mixed
+      @company_name : String,                      # Same as immediate_origin_name in the FileHeader
+      @company_identification : String,            # This should be the immediate_origin from the FileHeader or a custom designation
+      @standard_entry_class : StandardEntryClass,  # Type reason for the money transfer
+      @company_entry_description : String,         # Description of the transaction to be printed on the receivers' bank statement
+      @effective_entry_date : Time,                # The date to post the transaction
+      @originating_dfi_identification : String,    # Same as immediate_destination in FileHeader
+      @originator_status_code : Char,              # The ODFI initiating the entry.
       @company_discretionary_data : String? = nil, # For your custom accounting purposes
-      @company_descriptive_date : Time? = nil, # The date to print on the receivers' bank statement
-      @originator_status_code : Char = '1', # just because
-      @batch_number : Int32 = 1 # Increment this for each batch
+      @company_descriptive_date : Time? = nil,     # The date to print on the receivers' bank statement
+      @batch_number : Int32 = 1                    # Increment this for each batch
     )
     end
 
@@ -49,7 +49,7 @@ module Nacha
       io << @effective_entry_date.to_s("%y%m%d")
       io << "   "
       io << @originator_status_code.to_s
-      io << @originating_financial_institution.to_s.rjust(8, ' ')
+      io << @originating_dfi_identification.to_s.rjust(8, ' ')
       io << @batch_number.to_s.rjust(7, '0')
       io
     end

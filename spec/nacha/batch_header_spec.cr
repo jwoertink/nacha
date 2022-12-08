@@ -16,7 +16,8 @@ describe Nacha::BatchHeader do
         company_entry_description: "PAY OUT",
         effective_entry_date: current_time,
         company_descriptive_date: current_time,
-        originating_financial_institution: "07100050",
+        originating_dfi_identification: "07100050",
+        originator_status_code: '1',
       )
       batch_header.build(io)
       io.to_s.should eq(example)
