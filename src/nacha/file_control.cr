@@ -10,7 +10,7 @@ module Nacha
 
     def initialize(
       @batch_count : Int32,        # Total number of BatchHeader records
-      @block_count : Int32,        # Total number of rows including this one
+      @block_count : Int32,        # A "block" is 10 rows. The number of blocks in the file
       @entry_count : Int32,        # Total number of EntryDetail and EntryDetailAddenda records
       @entry_hash : Int64,         # Sum of all BatchControl entry_hashes
       @total_debit_amount : Int64, # Sum of all BatchControl total_debit_amount

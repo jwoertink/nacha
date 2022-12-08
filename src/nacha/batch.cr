@@ -17,8 +17,8 @@ module Nacha
         service_class_code: @header.service_class_code,
         entry_addenda_count: @entries.size,
         entry_hash: entry_hash,
-        total_debit_amount: @entries.select(&.debit?).sum(0, &.amount),
-        total_credit_amount: @entries.select(&.credit?).sum(0, &.amount),
+        total_debit_amount: total_debit_amount,
+        total_credit_amount: total_credit_amount,
         company_identification: @header.company_identification,
         originating_dfi_identification: @header.originating_dfi_identification,
         batch_number: @header.batch_number
@@ -36,13 +36,21 @@ module Nacha
       io
     end
 
-    private def entry_hash : String
+    def entry_hash : String
       total = @entries.sum(0, &.receiving_dfi_identification.to_i).to_s
       if total.bytesize > 10
         total[-10..-1]
       else
         total.rjust(10, '0')
       end
+    end
+
+    def total_debit_amount : Int64
+      @entries.select(&.debit?).sum(0, &.amount)
+    end
+
+    def total_credit_amount : Int64
+      @entries.select(&.credit?).sum(0, &.amount)
     end
   end
 end
