@@ -41,6 +41,10 @@ module Nacha
       @dfi_routing_number[8].to_s
     end
 
+    def formatted_trace_number : String
+      @trace_number.to_s.rjust(15, '0')
+    end
+
     def build(io : IO) : IO
       io << TYPE_CODE.to_s
       io << @transaction_code.value.to_s
@@ -52,7 +56,7 @@ module Nacha
       io << @individual_name.rjust(22, ' ')
       io << @discretionary_data.to_s.ljust(2, ' ')
       io << (@addenda_included ? "1" : "0")
-      io << @trace_number.to_s.rjust(15, '0')
+      io << formatted_trace_number
       io
     end
   end
