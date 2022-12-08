@@ -11,7 +11,7 @@ module Nacha
     def initialize(
       @service_class_code : Batch::ServiceClassCode, # Credit, Debit, Mixed
       @entry_addenda_count : Int32,                  # Total number of entries in the batch
-      @entry_hash : Int64,                           # Add all `receiving_dfi_identification` from all entries, then return last 10 digits
+      @entry_hash : String,                          # Add all `receiving_dfi_identification` from all entries, then return last 10 digits
       @total_debit_amount : Int64,
       @total_credit_amount : Int64,
       @company_identification : String,
@@ -25,7 +25,7 @@ module Nacha
       io << TYPE_CODE.to_s
       io << @service_class_code.value.to_s
       io << @entry_addenda_count.to_s.rjust(6, '0')
-      io << @entry_hash.to_s
+      io << @entry_hash
       io << @total_debit_amount.to_s.rjust(12, '0')
       io << @total_credit_amount.to_s.rjust(12, '0')
       io << @company_identification.rjust(10, ' ')

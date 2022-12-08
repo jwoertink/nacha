@@ -16,6 +16,11 @@ module Nacha
       WEB # Authorization received via the Internet
     end
 
+    getter service_class_code : Batch::ServiceClassCode
+    getter company_identification : String
+    getter originating_dfi_identification : String
+    getter batch_number : Int32
+
     def initialize(
       @service_class_code : Batch::ServiceClassCode, # Credit, Debit, Mixed
       @company_name : String,                        # Same as immediate_origin_name in the FileHeader

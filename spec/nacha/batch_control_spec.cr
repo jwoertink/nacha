@@ -10,7 +10,7 @@ describe Nacha::BatchControl do
       batch_control = Nacha::BatchControl.new(
         service_class_code: :credit,
         entry_addenda_count: 2,
-        entry_hash: 1234567890,
+        entry_hash: "1234567890",
         total_debit_amount: 0,
         total_credit_amount: 124391,
         company_identification: "1234567890",

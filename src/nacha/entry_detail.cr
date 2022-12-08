@@ -18,6 +18,8 @@ module Nacha
       SavingsDebitPrenote   = 38
     end
 
+    getter amount : Int32
+
     def initialize(
       @transaction_code : TransactionCode,        # Checking or Savings, Deposit or Withdraw
       @dfi_routing_number : String,               # Routing number
@@ -29,6 +31,14 @@ module Nacha
       @addenda_included : Bool = false,
       @trace_number : Int32 = 1
     )
+    end
+
+    def debit? : Bool
+      @transaction_code.checking_debit? || @transaction_code.savings_debit?
+    end
+
+    def credit? : Bool
+      @transaction_code.checking_credit? || @transaction_code.savings_credit?
     end
 
     # First 8 of the routing number
