@@ -3,6 +3,10 @@
 > The ACH file format (or NACHA file) is a text file with ASCII text lines, where each line is 94 characters long and serves as a “record” to execute domestic ACH payments through the Automated Clearing House Network (NACHA).
 - https://tipalti.com/nacha-file-format/
 
+Here's a few helpful links:
+- https://achdevguide.nacha.org/ach-file-overview
+- https://achdevguide.nacha.org/ach-file-details
+
 This Crystal shard allows you to generate or parse a NACHA file.
 
 ## Installation
