@@ -4,6 +4,7 @@ describe Nacha::FileHeader do
   describe "build" do
     it "formats the data correctly" do
       example = "101 012345678 8723161272212071417A094101Bank of Specialty      My Company Name                "
+      example.bytesize.should eq(Nacha::File::RECORD_SIZE)
 
       current_time = Time.utc(2022, 12, 7, 14, 17, 0)
 

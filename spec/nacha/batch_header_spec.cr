@@ -4,6 +4,7 @@ describe Nacha::BatchHeader do
   describe "build" do
     it "formats the data correctly" do
       example = "5220My Company                          1234567890WEBPAY OUT   221207221207   1071000500000001"
+      example.bytesize.should eq(Nacha::File::RECORD_SIZE)
 
       current_time = Time.utc(2022, 12, 7, 14, 17, 0)
 

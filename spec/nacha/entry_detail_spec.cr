@@ -4,6 +4,7 @@ describe Nacha::EntryDetail do
   describe "build" do
     it "formats the data correctly" do
       example = "62210264791931945123488995   0000062432            418           Billy Bonka  0000000000000001"
+      example.bytesize.should eq(Nacha::File::RECORD_SIZE)
 
       io = IO::Memory.new
       entry = Nacha::EntryDetail.new(
