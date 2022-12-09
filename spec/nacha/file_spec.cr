@@ -3,19 +3,25 @@ require "../spec_helper"
 describe Nacha::File do
   describe "generate" do
     it "builds a full nacha formatted file" do
-      # TODO: make a fixture file for these
-      example = <<-NACHA
-      101 012345678 8723161272212071417A094101Bank of Specialty      My Company Name                
-      5220My Company                          1234567890WEBPAY OUT   221207221207   1071000500000001
-      62210264791931945123488995   0000062432            418           Billy Bonka  0000000000000001
-      622318092165493805838128300  0000035249            419           Milly Monka  0000000000000002
-      822000000200420740070000000000000000000976811234567890                         071000500000001
-      9000001000005000000011234567890000000000000000000050099                                       
-      NACHA
+      # Avoid issues with ameba and trailing spaces
+      example = [
+        "101 012345678 8723161272212071417A094101Bank of Specialty      My Company Name                ",
+        "5220My Company                          1234567890WEBPAY OUT   221207221207   1071000500000001",
+        "62210264791931945123488995   0000062432            418           Billy Bonka  0000000000000001",
+        "622318092165493805838128300  0000035249            419           Milly Monka  0000000000000002",
+        "822000000200420740070000000000000000000976811234567890                         071000500000001",
+        "9000001000001000000020042074007000000000000000000097681                                       ",
+        "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+        "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+      ].join("\n")
 
-      # 6 rows plus 5 linebreaks
-      example_size = Nacha::File::RECORD_SIZE * 6 + 5
+      # 10 rows plus 9 linebreaks
+      example_size = Nacha::File::RECORD_SIZE * 10 + 9
       example.bytesize.should eq(example_size)
+
+      current_time = Time.utc(2022, 12, 7, 14, 17, 0)
 
       file_header = Nacha::FileHeader.new(
         immediate_destination: "012345678",

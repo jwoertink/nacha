@@ -36,6 +36,10 @@ module Nacha
       io
     end
 
+    def row_count : Int32
+      header.row_count + entries.sum(0, &.row_count) + control.row_count
+    end
+
     def entry_hash : String
       total = @entries.sum(0, &.receiving_dfi_identification.to_i).to_s
       if total.bytesize > 10
@@ -46,11 +50,11 @@ module Nacha
     end
 
     def total_debit_amount : Int64
-      @entries.select(&.debit?).sum(0, &.amount)
+      @entries.select(&.debit?).sum(0, &.amount).to_i64
     end
 
     def total_credit_amount : Int64
-      @entries.select(&.credit?).sum(0, &.amount)
+      @entries.select(&.credit?).sum(0, &.amount).to_i64
     end
   end
 end
