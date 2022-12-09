@@ -23,6 +23,8 @@ This Crystal shard allows you to generate or parse a NACHA file.
 
 ## Usage
 
+**Still under development, things may change**
+
 ```crystal
 require "nacha"
 
@@ -35,24 +37,26 @@ batches = [
   Nacha::Batch.new(
     header: Nacha::BatchHeader.new,
     entries: entries,
-    control: Nacha::BatchControl.new,
   ),
 ] of Nacha::Batch
 
 ach_file = Nacha::File.new(
   header: Nacha::FileHeader.new,
   batches: batches,
-  control: Nacha::FileControl.new,
 )
 
 puts ach_file.generate
 ```
 
-TODO: Write usage instructions here
 
 ## Development
 
-TODO: Write development instructions here
+* write code
+* write spec
+* `crystal tool format spec/ src/`
+* `./bin/ameba`
+* `crystal spec`
+* repeat
 
 ## Contributing
 
