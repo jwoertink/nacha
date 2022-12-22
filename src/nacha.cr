@@ -1,4 +1,5 @@
 require "./nacha/mixins/*"
+require "./nacha/errors"
 require "./nacha/**"
 
 module Nacha
