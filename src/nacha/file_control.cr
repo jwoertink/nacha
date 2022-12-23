@@ -4,18 +4,69 @@ module Nacha
   # and totals for each type of entry
   class FileControl
     include BuildableRecord
+    include ParsableRecord
 
     TYPE_CODE      = 9
     RESERVED_SPACE = " " * 39
 
+    getter batch_count : Int32         # Total number of BatchHeader records
+    getter block_count : Int32         # A "block" is 10 rows. The number of blocks in the file
+    getter entry_count : Int32         # Total number of EntryDetail and EntryDetailAddenda records
+    getter entry_hash : Int64          # Sum of all BatchControl entry_hashes
+    getter total_debit_amount : Int64  # Sum of all BatchControl total_debit_amount
+    getter total_credit_amount : Int64 # Sum of all BatchControl total_credit_amount
+
     def initialize(
-      @batch_count : Int32,        # Total number of BatchHeader records
-      @block_count : Int32,        # A "block" is 10 rows. The number of blocks in the file
-      @entry_count : Int32,        # Total number of EntryDetail and EntryDetailAddenda records
-      @entry_hash : Int64,         # Sum of all BatchControl entry_hashes
-      @total_debit_amount : Int64, # Sum of all BatchControl total_debit_amount
-      @total_credit_amount : Int64 # Sum of all BatchControl total_credit_amount
+      @batch_count : Int32,
+      @block_count : Int32,
+      @entry_count : Int32,
+      @entry_hash : Int64,
+      @total_debit_amount : Int64,
+      @total_credit_amount : Int64
     )
+    end
+
+    def self.raise_file_header_parse(name : String, value : String)
+      ParsableRecord.raise_parse_failed_error(name, value, "File Control")
+    end
+
+    def self.parse(input : String) : self
+      if input.bytesize == Nacha::File::RECORD_SIZE
+        type_code = input[0].to_s
+        type_code == TYPE_CODE.to_s || raise_file_header_parse("Type Code", type_code)
+
+        batch_count = input[1..6]
+        batch_count.match(/\d+/) || raise_file_header_parse("Batch Count", batch_count)
+
+        block_count = input[7..12]
+        block_count.match(/\d+/) || raise_file_header_parse("Block Count", block_count)
+
+        entry_count = input[13..20]
+        entry_count.match(/\d+/) || raise_file_header_parse("Entry/Addenda Count", entry_count)
+
+        entry_hash = input[21..30]
+        entry_hash.match(/\d+/) || raise_file_header_parse("Entry Hash", entry_hash)
+
+        total_debit_amount = input[31..42]
+        total_debit_amount.match(/\d+/) || raise_file_header_parse("Total Debit Amount", total_debit_amount)
+
+        total_credit_amount = input[43..54]
+        total_credit_amount.match(/\d+/) || raise_file_header_parse("Total Credit Amount", total_credit_amount)
+
+        reserved = input[55..93]
+        reserved == RESERVED_SPACE || raise_file_header_parse("Reserved Space", reserved)
+
+        new(
+          batch_count: batch_count.to_i,
+          block_count: block_count.to_i,
+          entry_count: entry_count.to_i,
+          entry_hash: entry_hash.to_i64,
+          total_debit_amount: total_debit_amount.to_i64,
+          total_credit_amount: total_credit_amount.to_i64,
+        )
+      else
+        raise_file_header_parse("Record Length", input.bytesize.to_s)
+      end
     end
 
     def build(io : IO) : IO
