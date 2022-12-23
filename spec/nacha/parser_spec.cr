@@ -12,4 +12,15 @@ describe Nacha::Parser do
       details.header.immediate_origin_name.should eq("ACME CORPORATION")
     end
   end
+
+  context "errors" do
+    it "raises when the input has no data" do
+      parser = Nacha::Parser.new
+      ach = "\n"
+
+      expect_raises(Nacha::ParserError, "No valid ACH data found") do
+        parser.parse(ach)
+      end
+    end
+  end
 end

@@ -1,11 +1,21 @@
 module Nacha
   class Parser
+    # TODO: Figure out a cleaner way to handle this.
+    # I'm using this to group batches and entires together
+    # so when I build the objects, they're all properly related
     private property raw_data : Hash(String, String | Array(Hash(String, String | Array(String)))) do
       {} of String => String | Array(Hash(String, String | Array(String)))
     end
 
+    # `input` should be the entire ACH file.
     def parse(input : String) : Nacha::File
-      lines = input.split("\n")
+      data = input.strip.chomp.presence
+
+      if data.nil?
+        raise Nacha::ParserError.new("No valid ACH data found")
+      end
+
+      lines = data.split("\n")
       raw_data["batches"] = [] of Hash(String, String | Array(String))
 
       lines.each do |line|
