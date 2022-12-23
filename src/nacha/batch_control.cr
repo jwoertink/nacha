@@ -81,18 +81,37 @@ module Nacha
     end
 
     def build(io : IO) : IO
+      run_input_validations!
       io << TYPE_CODE.to_s
-      io << @service_class_code.value.to_s
-      io << @entry_addenda_count.to_s.rjust(6, '0')
-      io << @entry_hash
-      io << @total_debit_amount.to_s.rjust(12, '0')
-      io << @total_credit_amount.to_s.rjust(12, '0')
-      io << @company_identification.rjust(10, ' ')
-      io << @message_authorization_code.to_s.ljust(19, ' ')
+      io << service_class_code.value.to_s
+      io << entry_addenda_count.to_s.rjust(6, '0')
+      io << entry_hash
+      io << total_debit_amount.to_s.rjust(12, '0')
+      io << total_credit_amount.to_s.rjust(12, '0')
+      io << company_identification.rjust(10, ' ')
+      io << message_authorization_code.to_s.ljust(19, ' ')
       io << RESERVED_SPACE
-      io << @originating_dfi_identification.to_s.rjust(8, ' ')
-      io << @batch_number.to_s.rjust(7, '0')
+      io << originating_dfi_identification.to_s.rjust(8, ' ')
+      io << batch_number.to_s.rjust(7, '0')
       io
+    end
+
+    private def run_input_validations!
+      if company_identification.to_s.size > 10
+        errors["company_identification"] = ["is too long"]
+      end
+
+      if entry_hash.to_s.size > 10
+        errors["entry_hash"] = ["is too long"]
+      end
+
+      if originating_dfi_identification.to_s.size > 8
+        errors["originating_dfi_identification"] = ["is too long"]
+      end
+
+      if !valid?
+        raise Nacha::BuildError.new("Could not build Batch Control")
+      end
     end
   end
 end

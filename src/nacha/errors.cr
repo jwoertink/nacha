@@ -4,4 +4,7 @@ module Nacha
 
   class ParserError < BaseError
   end
+
+  class BuildError < BaseError
+  end
 end
