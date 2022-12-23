@@ -4,7 +4,7 @@ module Nacha
       {} of String => String | Array(Hash(String, String | Array(String)))
     end
 
-    def parse(input : String) # : Nacha::File
+    def parse(input : String) : Nacha::File
       lines = input.split("\n")
       raw_data["batches"] = [] of Hash(String, String | Array(String))
 
@@ -29,9 +29,20 @@ module Nacha
         end
       end
 
-      # Nacha::FileHeader.parse(raw_data["file_header"])
-      # rescue e : Nacha::ParserError
-      #   # handle errors
+      file_header = Nacha::FileHeader.parse(raw_data["file_header"].as(String))
+      batches = [] of Nacha::Batch
+      raw_data["batches"].as(Array).each do |batch_data|
+        batch_header = Nacha::BatchHeader.parse(batch_data["batch_header"].as(String))
+
+        entries = [] of Nacha::EntryDetail
+        batch_data["entries"].as(Array).each do |entry_data|
+          entries << Nacha::EntryDetail.parse(entry_data)
+        end
+
+        batches << Nacha::Batch.new(header: batch_header, entries: entries)
+      end
+
+      Nacha::File.new(header: file_header, batches: batches)
     end
 
     private def insert_into_batch(batch : Hash(String, String | Array(String)), line : String) : Nil
