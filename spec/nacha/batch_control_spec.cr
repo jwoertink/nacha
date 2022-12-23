@@ -21,4 +21,31 @@ describe Nacha::BatchControl do
       io.to_s.should eq(example)
     end
   end
+
+  describe "parse" do
+    it "parses the data correctly" do
+      line = "820000000100021000020000010000000000000000001233211212                         012000120000261"
+      batch_control = Nacha::BatchControl.parse(line)
+      batch_control.service_class_code.should eq(Nacha::Batch::ServiceClassCode::Mixed)
+      batch_control.total_debit_amount.should eq(1000000i64)
+      batch_control.total_credit_amount.should eq(0i64)
+      batch_control.batch_number.should eq(261)
+    end
+
+    context "errors" do
+      it "raises when it's not a BatchControl" do
+        line = "5200ACME CORPORATION                    1233211212WEBONLINEPYMT2209292209302731012000120000261"
+        expect_raises(Nacha::ParserError, "Invalid Type Code '5' for Batch Control") do
+          Nacha::BatchControl.parse(line)
+        end
+      end
+
+      it "raises when it's the wrong length" do
+        line = "8200"
+        expect_raises(Nacha::ParserError, "Invalid Record Length '4' for Batch Control") do
+          Nacha::BatchControl.parse(line)
+        end
+      end
+    end
+  end
 end
