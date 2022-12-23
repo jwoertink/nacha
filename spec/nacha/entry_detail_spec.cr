@@ -32,7 +32,7 @@ describe Nacha::EntryDetail do
     end
 
     context "errors" do
-      it "raises when it's not a BatchHeader" do
+      it "raises when it's not a EntryDetail" do
         line = "101 021000021 3210001232209291648D094101WELLS FARGO BANK       ACME CORPORATION               "
         expect_raises(Nacha::ParserError, "Invalid Type Code '1' for Entry Detail") do
           Nacha::EntryDetail.parse(line)

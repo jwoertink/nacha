@@ -33,7 +33,7 @@ describe Nacha::BatchControl do
     end
 
     context "errors" do
-      it "raises when it's not a BatchHeader" do
+      it "raises when it's not a BatchControl" do
         line = "5200ACME CORPORATION                    1233211212WEBONLINEPYMT2209292209302731012000120000261"
         expect_raises(Nacha::ParserError, "Invalid Type Code '5' for Batch Control") do
           Nacha::BatchControl.parse(line)

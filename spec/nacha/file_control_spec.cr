@@ -33,7 +33,7 @@ describe Nacha::FileControl do
     end
 
     context "errors" do
-      it "raises when it's not a FileHeader" do
+      it "raises when it's not a FileControl" do
         line = "5200ACME CORPORATION                    1233211212WEBONLINEPYMT2209292209302731012000120000261"
         expect_raises(Nacha::ParserError, "Invalid Type Code '5' for File Control") do
           Nacha::FileControl.parse(line)
