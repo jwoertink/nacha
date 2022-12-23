@@ -30,38 +30,38 @@ module Nacha
     )
     end
 
-    def self.raise_file_header_parse(name : String, value : String)
+    def self.raise_parse_error(name : String, value : String)
       ParsableRecord.raise_parse_failed_error(name, value, "File Header")
     end
 
     def self.parse(input : String) : self
       if input.bytesize == Nacha::File::RECORD_SIZE
         type_code = input[0].to_s
-        type_code == TYPE_CODE.to_s || raise_file_header_parse("Type Code", type_code)
+        type_code == TYPE_CODE.to_s || raise_parse_error("Type Code", type_code)
 
         priority_code = input[1..2]
-        priority_code == PRIORITY_CODE.to_s.rjust(2, '0') || raise_file_header_parse("Priority Code", priority_code)
+        priority_code == PRIORITY_CODE.to_s.rjust(2, '0') || raise_parse_error("Priority Code", priority_code)
 
         immediate_destination = input[3..12]
         immediate_origin = input[13..22]
 
         file_creation_date = input[23..28]
-        file_creation_date.match(/\d{6}/) || raise_file_header_parse("File Creation Date", file_creation_date)
+        file_creation_date.match(/\d{6}/) || raise_parse_error("File Creation Date", file_creation_date)
 
         file_creation_time = input[29..32]
-        file_creation_time.match(/\d{4}/) || raise_file_header_parse("File Creation Time", file_creation_time)
+        file_creation_time.match(/\d{4}/) || raise_parse_error("File Creation Time", file_creation_time)
 
         file_id_modifier = input[33].to_s
-        file_id_modifier.match(/[a-zA-Z0-9]/) || raise_file_header_parse("File ID Modifier", file_id_modifier)
+        file_id_modifier.match(/[a-zA-Z0-9]/) || raise_parse_error("File ID Modifier", file_id_modifier)
 
         record_size = input[34..36]
-        record_size == Nacha::File::RECORD_SIZE.to_s.rjust(3, '0') || raise_file_header_parse("Record Size", record_size)
+        record_size == Nacha::File::RECORD_SIZE.to_s.rjust(3, '0') || raise_parse_error("Record Size", record_size)
 
         blocking_factor = input[37..38]
-        blocking_factor == Nacha::File::BLOCKING_FACTOR.to_s || raise_file_header_parse("Blocking Factor", blocking_factor)
+        blocking_factor == Nacha::File::BLOCKING_FACTOR.to_s || raise_parse_error("Blocking Factor", blocking_factor)
 
         format_code = input[39].to_s
-        format_code == Nacha::File::FORMAT_CODE.to_s || raise_file_header_parse("Format Code", format_code)
+        format_code == Nacha::File::FORMAT_CODE.to_s || raise_parse_error("Format Code", format_code)
 
         immediate_destination_name = input[40..62]
         immediate_origin_name = input[63..85]
@@ -78,7 +78,7 @@ module Nacha
           reference_code: reference_code.strip.presence,
         )
       else
-        raise_file_header_parse("Record Length", input.bytesize.to_s)
+        raise_parse_error("Record Length", input.bytesize.to_s)
       end
     end
 
