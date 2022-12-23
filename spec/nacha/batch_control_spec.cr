@@ -20,6 +20,28 @@ describe Nacha::BatchControl do
       batch_control.build(io)
       io.to_s.should eq(example)
     end
+
+    it "raises an exception when the content is malformed" do
+      io = IO::Memory.new
+      batch_control = Nacha::BatchControl.new(
+        service_class_code: :credit,
+        entry_addenda_count: 2,
+        entry_hash: "12345678934234230",
+        total_debit_amount: 0,
+        total_credit_amount: 124391,
+        company_identification: "123456723423423423890",
+        originating_dfi_identification: "071002342342342050",
+        batch_number: 1,
+      )
+
+      expect_raises(Nacha::BuildError, "Could not build Batch Control") do
+        batch_control.build(io)
+      end
+
+      batch_control.errors["entry_hash"].should contain("is too long")
+      batch_control.errors["company_identification"].should contain("is too long")
+      batch_control.errors["originating_dfi_identification"].should contain("is too long")
+    end
   end
 
   describe "parse" do

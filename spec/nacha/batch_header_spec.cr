@@ -3,26 +3,52 @@ require "../spec_helper"
 describe Nacha::BatchHeader do
   describe "build" do
     it "formats the data correctly" do
-      example = "5220My Company                          1234567890WEBPAY OUT   221207221207   1071000500000001"
+      example = "5200ACME CORPORATION                    1233211212WEBONLINEPYMT2209292209302731012000120000261"
       example.bytesize.should eq(Nacha::File::RECORD_SIZE)
-
-      current_time = Time.utc(2022, 12, 7, 14, 17, 0)
 
       io = IO::Memory.new
       batch_header = Nacha::BatchHeader.new(
-        service_class_code: :credit,
-        company_name: "My Company",
-        company_identification: "1234567890",
+        service_class_code: :mixed,
+        company_name: "ACME CORPORATION",
+        company_identification: "1233211212",
         standard_entry_class: :web,
-        company_entry_description: "PAY OUT",
-        effective_entry_date: current_time,
-        company_descriptive_date: current_time,
-        originating_dfi_identification: "07100050",
+        company_entry_description: "ONLINEPYMT",
+        effective_entry_date: Time.utc(2022, 9, 30, 12, 0, 0),
+        company_descriptive_date: Time.utc(2022, 9, 29, 12, 0, 0),
+        settlement_date: 273,
+        originating_dfi_identification: "01200012",
         originator_status_code: '1',
+        batch_number: 261
       )
       batch_header.build(io)
       io.to_s.should eq(example)
       io.to_s.size.should eq(94)
+    end
+
+    it "raises an exception when the content is malformed" do
+      io = IO::Memory.new
+      batch_header = Nacha::BatchHeader.new(
+        service_class_code: :mixed,
+        company_name: "The Super MAX Acme Corporation LLC Foundation",
+        company_identification: "123321121223042304023439",
+        standard_entry_class: :web,
+        company_entry_description: "FOR THE ONLINE PAYMENT",
+        effective_entry_date: Time.utc(2022, 9, 30, 12, 0, 0),
+        company_descriptive_date: Time.utc(2022, 9, 29, 12, 0, 0),
+        settlement_date: 273,
+        originating_dfi_identification: "89023093248001200012",
+        originator_status_code: '1',
+        batch_number: 261
+      )
+
+      expect_raises(Nacha::BuildError, "Could not build Batch Header") do
+        batch_header.build(io)
+      end
+
+      batch_header.errors["company_identification"].should contain("is too long")
+      batch_header.errors["company_name"].should contain("is too long")
+      batch_header.errors["company_entry_description"].should contain("is too long")
+      batch_header.errors["originating_dfi_identification"].should contain("is too long")
     end
   end
 

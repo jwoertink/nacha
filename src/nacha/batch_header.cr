@@ -27,6 +27,7 @@ module Nacha
     getter originator_status_code : Char                # The ODFI initiating the entry.
     getter company_discretionary_data : String?         # For your custom accounting purposes
     getter company_descriptive_date : Time?             # The date to print on the receivers' bank statement
+    getter settlement_date : Int32?                     # A 3 digit Julian date. This is inserted by the ACH processor
     getter batch_number : Int32                         # Increment this for each batch
 
     def initialize(
@@ -94,20 +95,47 @@ module Nacha
     end
 
     def build(io : IO) : IO
+      run_input_validations!
       io << TYPE_CODE.to_s
-      io << @service_class_code.value.to_s
-      io << @company_name[0..15].ljust(16, ' ')
-      io << @company_discretionary_data.to_s.ljust(20, ' ')
-      io << @company_identification.rjust(10, ' ')
-      io << @standard_entry_class.to_s
-      io << @company_entry_description.ljust(10, ' ')
-      io << @company_descriptive_date.try(&.to_s("%y%m%d")).to_s.ljust(6, ' ')
-      io << @effective_entry_date.to_s("%y%m%d")
-      io << @settlement_date.to_s.ljust(3, ' ')
-      io << @originator_status_code.to_s
-      io << @originating_dfi_identification.to_s.rjust(8, ' ')
-      io << @batch_number.to_s.rjust(7, '0')
+      io << service_class_code.value.to_s
+      io << company_name[0..15].ljust(16, ' ')
+      io << company_discretionary_data.to_s.ljust(20, ' ')
+      io << company_identification.rjust(10, ' ')
+      io << standard_entry_class.to_s
+      io << company_entry_description.ljust(10, ' ')
+      io << company_descriptive_date.try(&.to_s("%y%m%d")).to_s.ljust(6, ' ')
+      io << effective_entry_date.to_s("%y%m%d")
+      io << settlement_date.to_s.ljust(3, ' ')
+      io << originator_status_code.to_s
+      io << originating_dfi_identification.to_s.rjust(8, ' ')
+      io << batch_number.to_s.rjust(7, '0')
       io
+    end
+
+    private def run_input_validations!
+      if company_name.to_s.size > 16
+        errors["company_name"] = ["is too long"]
+      end
+
+      if company_discretionary_data.to_s.size > 20
+        errors["company_discretionary_data"] = ["is too long"]
+      end
+
+      if company_identification.to_s.size > 10
+        errors["company_identification"] = ["is too long"]
+      end
+
+      if company_entry_description.to_s.size > 10
+        errors["company_entry_description"] = ["is too long"]
+      end
+
+      if originating_dfi_identification.to_s.size > 8
+        errors["originating_dfi_identification"] = ["is too long"]
+      end
+
+      if !valid?
+        raise Nacha::BuildError.new("Could not build Batch Header")
+      end
     end
   end
 end
