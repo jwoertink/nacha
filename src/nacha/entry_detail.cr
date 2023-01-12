@@ -115,8 +115,8 @@ module Nacha
       io << check_digit
       io << @dfi_account_number[0..16].ljust(17, ' ')
       io << @amount.to_s.rjust(10, '0')
-      io << @individual_identification_number.rjust(15, ' ')
-      io << @individual_name.rjust(22, ' ')
+      io << @individual_identification_number.ljust(15, ' ')
+      io << @individual_name.ljust(22, ' ')
       io << @discretionary_data.to_s.ljust(2, ' ')
       io << (@addenda_included ? "1" : "0")
       io << formatted_trace_number
