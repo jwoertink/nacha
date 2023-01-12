@@ -38,7 +38,7 @@ module Nacha
       @individual_name : String,
       @trace_number : String,
       @discretionary_data : String? = nil,
-      @addenda_included : Bool = false,
+      @addenda_included : Bool = false
     )
     end
 
