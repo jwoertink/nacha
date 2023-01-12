@@ -7,8 +7,8 @@ describe Nacha::File do
       example = [
         "101 012345678 8723161272212071417A094101Bank of Specialty      My Company Name                ",
         "5220My Company                          1234567890WEBPAY OUT   221207221207   1071000500000001",
-        "62210264791931945123488995   0000062432            418           Billy Bonka  0000000000000001",
-        "622318092165493805838128300  0000035249            419           Milly Monka  0000000000000002",
+        "62210264791931945123488995   0000062432418            Billy Bonka             0000000000000001",
+        "622318092165493805838128300  0000035249419            Milly Monka             0000000000000002",
         "822000000200420740070000000000000000000976811234567890                         071000500000001",
         "9000001000001000000020042074007000000000000000000097681                                       ",
         "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
@@ -49,7 +49,7 @@ describe Nacha::File do
         amount: 62432, # $624.32
         individual_identification_number: "418",
         individual_name: "Billy Bonka",
-        trace_number: 1
+        trace_number: "1"
       )
       entry2 = Nacha::EntryDetail.new(
         transaction_code: :checking_credit,
@@ -58,7 +58,7 @@ describe Nacha::File do
         amount: 35249, # $352.49
         individual_identification_number: "419",
         individual_name: "Milly Monka",
-        trace_number: 2
+        trace_number: "2"
       )
       batch = Nacha::Batch.new(
         header: batch_header,

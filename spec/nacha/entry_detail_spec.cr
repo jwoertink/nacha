@@ -3,7 +3,7 @@ require "../spec_helper"
 describe Nacha::EntryDetail do
   describe "build" do
     it "formats the data correctly" do
-      example = "62210264791931945123488995   0000062432            418           Billy Bonka  0000000000000001"
+      example = "62210264791931945123488995   0000062432418            Billy Bonka             0000000000000001"
       example.bytesize.should eq(Nacha::File::RECORD_SIZE)
 
       io = IO::Memory.new
@@ -14,6 +14,7 @@ describe Nacha::EntryDetail do
         amount: 62432, # $624.32
         individual_identification_number: "418",
         individual_name: "Billy Bonka",
+        trace_number: "1",
       )
       entry.build(io)
       io.to_s.should eq(example)

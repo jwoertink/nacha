@@ -25,9 +25,9 @@ module Nacha
     getter amount : Int32                            # Amount to send in cents
     getter individual_identification_number : String # The individual's ID
     getter individual_name : String                  # Their name
+    getter trace_number : String                     # Each entry detail should have a unique ID related to the batch
     getter discretionary_data : String?              # Optional extra 2 character data you want to add
     getter addenda_included : Bool
-    getter trace_number : Int64
 
     def initialize(
       @transaction_code : TransactionCode,
@@ -36,9 +36,9 @@ module Nacha
       @amount : Int32,
       @individual_identification_number : String,
       @individual_name : String,
+      @trace_number : String,
       @discretionary_data : String? = nil,
-      @addenda_included : Bool = false,
-      @trace_number : Int64 = 1i64
+      @addenda_included : Bool = false
     )
     end
 
@@ -79,7 +79,7 @@ module Nacha
           individual_name: individual_name.strip,
           discretionary_data: discretionary_data.strip.presence,
           addenda_included: addenda_record_indicator == '1',
-          trace_number: trace_number.to_i64,
+          trace_number: trace_number,
         )
       else
         raise_parse_error("Record Length", input.bytesize.to_s)
@@ -105,7 +105,7 @@ module Nacha
     end
 
     def formatted_trace_number : String
-      @trace_number.to_s.rjust(15, '0')
+      @trace_number.rjust(15, '0')
     end
 
     def build(io : IO) : IO
@@ -115,8 +115,8 @@ module Nacha
       io << check_digit
       io << @dfi_account_number[0..16].ljust(17, ' ')
       io << @amount.to_s.rjust(10, '0')
-      io << @individual_identification_number.rjust(15, ' ')
-      io << @individual_name.rjust(22, ' ')
+      io << @individual_identification_number.ljust(15, ' ')
+      io << @individual_name.ljust(22, ' ')
       io << @discretionary_data.to_s.ljust(2, ' ')
       io << (@addenda_included ? "1" : "0")
       io << formatted_trace_number
