@@ -27,7 +27,7 @@ module Nacha
     getter individual_name : String                  # Their name
     getter trace_number : String                     # Each entry detail should have a unique ID related to the batch
     getter discretionary_data : String?              # Optional extra 2 character data you want to add
-    getter addenda_included : Bool
+    getter? addenda_included : Bool
 
     def initialize(
       @transaction_code : TransactionCode,
