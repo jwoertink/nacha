@@ -17,8 +17,8 @@ module Nacha
         block_count: block_count_for_control,
         entry_count: @batches.sum(0, &.entries.size),
         entry_hash: entry_hash.to_i64,
-        total_debit_amount: @batches.sum(0, &.total_debit_amount),
-        total_credit_amount: @batches.sum(0, &.total_credit_amount),
+        total_debit_amount: @batches.sum(0i64, &.total_debit_amount),
+        total_credit_amount: @batches.sum(0i64, &.total_credit_amount),
       )
     end
 
