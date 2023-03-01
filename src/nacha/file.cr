@@ -39,7 +39,7 @@ module Nacha
       control.build(io)
 
       if (row_count % 10) > 0
-        padding_needed = 10 - row_count
+        padding_needed = 10 - (row_count % 10)
         padding_needed.times do
           io << "\n"
           io << "9" * Nacha::File::RECORD_SIZE
