@@ -1,5 +1,7 @@
 require "../spec_helper"
 
+include DetailHelper
+
 describe Nacha::File do
   describe "generate" do
     it "builds a full nacha formatted file" do
@@ -67,6 +69,49 @@ describe Nacha::File do
 
       file = Nacha::File.new(header: file_header, batches: [batch])
       file.generate.should eq(example)
+    end
+
+    it "handles the overflow past 10 lines" do
+      current_time = Time.utc(2022, 12, 7, 14, 17, 0)
+
+      file_header = Nacha::FileHeader.new(
+        immediate_destination: "012345678",
+        immediate_origin: "872316127",
+        immediate_destination_name: "Bank of Specialty",
+        immediate_origin_name: "My Company Name",
+        file_creation_date: current_time,
+        file_creation_time: current_time,
+      )
+      batch_header = Nacha::BatchHeader.new(
+        service_class_code: :credit,
+        company_name: "My Company",
+        company_identification: "1234567890",
+        standard_entry_class: :web,
+        company_entry_description: "PAY OUT",
+        effective_entry_date: current_time,
+        company_descriptive_date: current_time,
+        originating_dfi_identification: "07100050",
+        originator_status_code: '1',
+      )
+
+      entries = [] of Nacha::EntryDetail
+
+      7.times do |_i|
+        entries << build_entry_detail(dfi_routing_number: "111111111", amount: 10000)
+      end
+
+      batch = Nacha::Batch.new(
+        header: batch_header,
+        entries: entries,
+      )
+
+      file = Nacha::File.new(header: file_header, batches: [batch])
+      nacha = file.generate
+      parsed = Nacha::Parser.new.parse(nacha)
+      nacha.split('\n').size.should eq(20)
+      parsed.control.block_count.should eq(2)
+      parsed.control.total_credit_amount.should eq(70000)
+      parsed.control.entry_hash.should eq(77777777_i64)
     end
   end
 end

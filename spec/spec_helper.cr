@@ -1,2 +1,5 @@
 require "spec"
+require "faker"
+require "random"
 require "../src/nacha"
+require "./support/**"
