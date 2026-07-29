@@ -26,7 +26,7 @@ module Nacha
       @file_creation_date : Time = Time.utc,
       @file_creation_time : Time = Time.utc,
       @file_id_modifier : Char = 'A',
-      @reference_code : String? = nil
+      @reference_code : String? = nil,
     )
     end
 

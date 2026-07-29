@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: false
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v7
       - uses: crystal-lang/install-crystal@v1
         with:
-          crystal: 1.6.2
+          crystal: latest
       - name: Install shards
         run: shards install
       - name: Format
@@ -30,7 +30,7 @@ jobs:
         shard_file:
           - shard.yml
         crystal_version:
-          - 1.6.2
+          - 1.16.3
           - latest
         experimental:
           - false
@@ -41,11 +41,11 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - uses: crystal-lang/install-crystal@v1
         with:
           crystal: ${{matrix.crystal_version}}
       - name: Install shards
-        run: SHARDS_OVERRIDE=${{ matrix.shard_file }} shards install --ignore-crystal-version
+        run: SHARDS_OVERRIDE=${{ matrix.shard_file }} shards install --skip-postinstall --skip-executables
       - name: Run tests
         run: crystal spec
