@@ -54,7 +54,7 @@ module Nacha
     end
 
     private def entry_hash : String
-      total = @batches.sum(0, &.entry_hash.to_i).to_s
+      total = @batches.sum(0_i64, &.entry_hash.to_i64).to_s
       if total.bytesize > 10
         total[-10..-1]
       else
