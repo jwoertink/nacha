@@ -28,7 +28,7 @@ module Nacha
       @company_identification : String,
       @originating_dfi_identification : String,
       @batch_number : Int32,
-      @message_authorization_code : Int32? = nil
+      @message_authorization_code : Int32? = nil,
     )
     end
 
