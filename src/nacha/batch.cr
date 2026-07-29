@@ -41,7 +41,7 @@ module Nacha
     end
 
     def entry_hash : String
-      total = @entries.sum(0, &.receiving_dfi_identification.to_i).to_s
+      total = @entries.sum(0_i64, &.receiving_dfi_identification.to_i64).to_s
       if total.bytesize > 10
         total[-10..-1]
       else
@@ -50,11 +50,11 @@ module Nacha
     end
 
     def total_debit_amount : Int64
-      @entries.select(&.debit?).sum(0, &.amount).to_i64
+      @entries.select(&.debit?).sum(0_i64, &.amount).to_i64
     end
 
     def total_credit_amount : Int64
-      @entries.select(&.credit?).sum(0, &.amount).to_i64
+      @entries.select(&.credit?).sum(0_i64, &.amount).to_i64
     end
   end
 end

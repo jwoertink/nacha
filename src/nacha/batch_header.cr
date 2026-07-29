@@ -42,7 +42,7 @@ module Nacha
       @company_discretionary_data : String? = nil,
       @company_descriptive_date : Time? = nil,
       @settlement_date : Int32? = nil,
-      @batch_number : Int32 = 1
+      @batch_number : Int32 = 1,
     )
     end
 

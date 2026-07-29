@@ -22,7 +22,7 @@ module Nacha
       @entry_count : Int32,
       @entry_hash : Int64,
       @total_debit_amount : Int64,
-      @total_credit_amount : Int64
+      @total_credit_amount : Int64,
     )
     end
 

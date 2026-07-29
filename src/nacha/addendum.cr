@@ -13,7 +13,7 @@ module Nacha
     def initialize(
       @entry_detail_sequence_number : Int32,
       @payment_related_information : String? = nil,
-      @sequence_number : Int32 = 1
+      @sequence_number : Int32 = 1,
     )
     end
 
