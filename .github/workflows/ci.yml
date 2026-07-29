@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: crystal-lang/install-crystal@v1
         with:
-          crystal: latest
+          crystal: 1.20.3
       - name: Install shards
         run: shards install
       - name: Format
